@@ -130,7 +130,7 @@ def check_tcode(tcode, tsubcode, description):
         if tsubcode not in ('Sell to Open', 'Buy to Close', 'Buy to Open', 'Sell to Close',
             'Expiration', 'Assignment', 'Exercise', 'Forward Split', 'Reverse Split',
             'Special Dividend', 'Cash Settled Assignment', 'Cash Settled Exercise',
-            'Futures Settlement', 'Transfer', 'Symbol Change'):
+            'Futures Settlement', 'Transfer', 'Symbol Change', 'Stock Merger'):
             raise ValueError(f'Unknown Receive Deliver tsubcode: {tsubcode}')
         if tsubcode == 'Assignment' and description != 'Removal of option due to assignment':
             raise ValueError(f'Assignment with description {description}')
@@ -774,7 +774,7 @@ def check(all_wk, output_summary, output_csv, output_excel, tax_output, show, ve
             raise
         (amount, fees) = (float(amount), float(fees))
         # option/stock splits are tax neutral, so zero out amount/fees for it:
-        if tcode == 'Receive Deliver' and tsubcode in ('Forward Split', 'Reverse Split', 'Symbol Change'):
+        if tcode == 'Receive Deliver' and tsubcode in ('Forward Split', 'Reverse Split', 'Symbol Change', 'Stock Merger'):
             (amount, fees) = (.0, .0)
         conv_usd = get_eurusd(date)
         cash_total += amount - fees
@@ -821,7 +821,7 @@ def check(all_wk, output_summary, output_csv, output_excel, tax_output, show, ve
         if isnan(quantity):
             quantity = 1
         else:
-            if tcode == 'Receive Deliver' and tsubcode in ('Forward Split', 'Reverse Split', 'Symbol Change'):
+            if tcode == 'Receive Deliver' and tsubcode in ('Forward Split', 'Reverse Split', 'Symbol Change', 'Stock Merger'):
                 pass # splits might have further data, not quantity
             elif int(quantity) != quantity:
                 # Hardcode AssetType.Crypto here again:
