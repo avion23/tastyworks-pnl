@@ -121,7 +121,7 @@ def check_tcode(tcode, tsubcode, description):
             'Fee', 'Withdrawal', 'Dividend', 'Debit Interest', 'Mark to Market'):
             raise ValueError(f'Unknown tsubcode for Money Movement: {tsubcode}')
         if tsubcode == 'Balance Adjustment' and description != 'Regulatory fee adjustment' \
-            and not description.startswith('Fee Correction'):
+            and not (description.startswith('Fee Correction') or description.startswith('Delayed Delivery_')):
             raise ValueError(f'Unknown Balance Adjustment: {description}')
     elif tcode == 'Trade':
         if tsubcode not in ('Sell to Open', 'Buy to Close', 'Buy to Open', 'Sell to Close', 'Buy', 'Sell'):
@@ -821,7 +821,8 @@ def check(all_wk, output_summary, output_csv, output_excel, tax_output, show, ve
         if isnan(quantity):
             quantity = 1
         else:
-            if tcode == 'Receive Deliver' and tsubcode in ('Forward Split', 'Reverse Split', 'Symbol Change', 'Stock Merger'):
+            if tcode == 'Receive Deliver' and \
+                tsubcode in ('Forward Split', 'Reverse Split', 'Symbol Change', 'Stock Merger'):
                 pass # splits might have further data, not quantity
             elif int(quantity) != quantity:
                 # Hardcode AssetType.Crypto here again:
