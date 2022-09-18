@@ -787,8 +787,12 @@ def check(all_wk, output_summary, output_csv, output_excel, tax_output, show, ve
         if tsubcode == 'Deposit':
             if description != 'ACH DEPOSIT':
                 tax_free = True
-        if tsubcode == 'Withdrawal' and not isnan(symbol):
-            tax_free = True
+
+        if tsubcode == 'Withdrawal':
+            # these transactions should be tax_free as well:
+            # 04/16/2018 11:00 PM	Money Movement	Withdrawal				0					0.00	-1.24	FROM 03/16 THRU 04/15 @ 8    %	Individual...60
+            if not isnan(symbol) or (isnan(symbol) and quantity == 0 and description.startswith('FROM ')):
+                tax_free = True
         # Stillhalterpraemien gelten als Zufluss und nicht als Anschaffung
         # und sind daher steuer-neutral:
         # TODO: We use "Sell-to-Open" to find all "Stillhaltergeschäfte". This works
