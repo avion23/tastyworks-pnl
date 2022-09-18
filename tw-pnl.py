@@ -104,12 +104,13 @@ class AssetType(enum.IntEnum):
     WithholdingTax = 13
     OrderPayments = 14
     Fee = 15
+    OtherRename = 16
 
 def transaction_type(asset_type):
     t = ['', 'Long-Option', 'Stillhalter-Option', 'Aktie', 'Aktienfond', 'Mischfond', 'Immobilienfond',
         'Sonstiges', 'Krypto', 'Future', 'Ein/Auszahlung', 'Dividende', 'Zinsen',
-        'Quellensteuer', 'Ordergebühr', 'Brokergebühr']
-    if int(asset_type) >= 1 and int(asset_type) <= 15:
+         'Quellensteuer', 'Ordergebühr', 'Brokergebühr', 'Umbenennung oder Split']
+    if int(asset_type) >= 1 and int(asset_type) <= 16:
         return t[asset_type]
     return ''
 
@@ -298,6 +299,12 @@ def is_stock(symbol, tsubcode):
             'for all unknown symbols.')
     # Just assume this is a normal stock if not in the above list
     return AssetType.IndStock
+
+
+def is_OtherRename(symbol, tcode, tsubcode):
+    """ Checks if the transaction has been just organisational in nature, i.e. tax free."""
+    if tcode == 'Receive Deliver' and tsubcode == 'Reverse Split':
+        return True
 
 def sign(x):
     if x >= 0:
